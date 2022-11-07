@@ -5,25 +5,39 @@ const initialState = {
 }
 
 const reducer = (state = initialState, action) => {
-    switch (action.type) {
-        case 'HEROES_FETCHING':
-            return {
-                ...state,
-                heroesLoadingStatus: 'loading'
-            }
-        case 'HEROES_FETCHED':
-            return {
-                ...state,
-                heroes: action.payload,
-                heroesLoadingStatus: 'idle'
-            }
-        case 'HEROES_FETCHING_ERROR':
-            return {
-                ...state,
-                heroesLoadingStatus: 'error'
-            }
-        default: return state
-    }
+  switch (action.type) {
+    case 'HEROES_FETCHING':
+      return {
+        ...state,
+        heroesLoadingStatus: 'loading'
+      }
+    case 'HEROES_FETCHED':
+      return {
+        ...state,
+        heroes: action.payload,
+        heroesLoadingStatus: 'idle'
+      }
+    case 'HEROES_FETCHING_ERROR':
+      return {
+        ...state,
+        heroesLoadingStatus: 'error'
+      }
+    case "HERO_CREATED":
+      let newHero = [...state.heroes, action.payload]
+      return {
+        ...state,
+        heroes: newHero
+      }
+    case "HERO_DELETED":
+      let delHero = state.heroes.filter(item=>item.id !== action.payload);
+      return {
+        ...state,
+        heroes: delHero
+      }
+      
+    default: 
+      return state
+  }
 }
 
 export default reducer;
