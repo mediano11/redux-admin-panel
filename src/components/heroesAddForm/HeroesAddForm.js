@@ -11,7 +11,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHttp } from "../../hooks/http.hook"
-import { heroCreated } from "../../actions"
+import { filtersFetching, filtersFetched, filtersFetchingError, heroCreated } from '../../actions';
 // import { reducer } from "../../reducers"
 import { v4 as uuidv4 } from 'uuid';
 
@@ -24,6 +24,16 @@ const HeroesAddForm = () => {
 
   const { request } = useHttp();
   const dispatch = useDispatch();
+  const {filters, filtersLoadingStatus} = useSelector(state => state);
+
+  useEffect(() => {
+      dispatch(filtersFetching());
+      request("http://localhost:3001/filters")
+          .then(data => dispatch(filtersFetched(data)))
+          .catch(() => dispatch(filtersFetchingError()))
+
+      // eslint-disable-next-line
+  }, []);
 
   const onSubmitHandler = (e) => {
     e.preventDefault();
@@ -34,7 +44,7 @@ const HeroesAddForm = () => {
       description: heroDescr,
       element: heroElement
     }
-    request("http://localhost:3000", "POST", JSON.stringify(newHero))
+    request("http://localhost:3001/heroes", "POST", JSON.stringify(newHero))
       .then(dispatch(heroCreated(newHero)))
       .catch(err=> console.log(err));
 
@@ -43,6 +53,25 @@ const HeroesAddForm = () => {
     setHeroElement('');
   }
 
+
+  
+  const renderFiltersList = (filters, status) => {
+    if (status === "loading") {
+      return <option>Загрузка элементов</option>
+    } else if (status === "error") {
+      return <option>Ошибка загрузки</option>
+    }
+    
+    if (filters && filters.length > 0 ) {
+      return filters.map(({name, title}) => {
+          // eslint-disable-next-line
+          if (name === 'all')  return;
+          return <option key={uuidv4()} value={name}>{title}</option>
+      })
+    }
+    
+  
+  }
   return (
     <form className="border p-4 shadow-lg rounded" onSubmit={onSubmitHandler}>
       <div className="mb-3">
@@ -84,10 +113,7 @@ const HeroesAddForm = () => {
             onChange={e=>setHeroElement(e.target.value)}
             >
             <option >Я владею элементом...</option>
-            <option value="fire">Огонь</option>
-            <option value="water">Вода</option>
-            <option value="wind">Ветер</option>
-            <option value="earth">Земля</option>
+            {renderFiltersList(filters, filtersLoadingStatus)}r
         </select>
       </div>
 

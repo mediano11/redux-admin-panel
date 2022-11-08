@@ -6,21 +6,56 @@
 // Изменять json-файл для удобства МОЖНО!
 // Представьте, что вы попросили бэкенд-разработчика об этом
 
+import { filtersFetching, filtersFetched, filtersFetchingError } from '../../actions';
+import { useSelector, useDispatch } from "react-redux";
+import {useHttp} from '../../hooks/http.hook';
+import { useEffect } from 'react';
+import Spinner from '../spinner/Spinner';
+
 const HeroesFilters = () => {
-    return (
-        <div className="card shadow-lg mt-4">
-            <div className="card-body">
-                <p className="card-text">Отфильтруйте героев по элементам</p>
-                <div className="btn-group">
-                    <button className="btn btn-outline-dark active">Все</button>
-                    <button className="btn btn-danger">Огонь</button>
-                    <button className="btn btn-primary">Вода</button>
-                    <button className="btn btn-success">Ветер</button>
-                    <button className="btn btn-secondary">Земля</button>
-                </div>
-            </div>
+  const {filters, filtersLoadingStatus} = useSelector(state => state);
+
+  const dispatch=  useDispatch();
+  const {request} = useHttp(); 
+
+  useEffect(() => {
+      dispatch(filtersFetching());
+      request("http://localhost:3001/filters")
+          .then(data => dispatch(filtersFetched(data)))
+          .catch(() => dispatch(filtersFetchingError()))
+
+      // eslint-disable-next-line
+  }, []);
+
+
+  if (filtersLoadingStatus === "loading") {
+    return <Spinner/>
+  } else if (filtersLoadingStatus === "error") {
+    return <h5 className="text-center mt-5">Помилка завантаження</h5>
+  }
+    
+  const renderFilters = (filters) => {
+    if(filters.length === 0){
+      return <h5 className="text-center mt-5">Елементи не знайдені</h5>
+    }
+
+    
+    return filters.map(({name, title, className}) => {
+      // eslint-disable-next-line
+      return <button key={name} className={`btn ${className}`}>{title}</button>
+    })
+  }
+
+  return (
+    <div className="card shadow-lg mt-4">
+      <div className="card-body">
+        <p className="card-text">Отфильтруйте героев по элементам</p>
+        <div className="btn-group">
+            {renderFilters(filters)}
         </div>
-    )
+      </div>
+    </div>
+  )
 }
 
 export default HeroesFilters;
