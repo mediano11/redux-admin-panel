@@ -8,7 +8,7 @@
 // Элементы <option></option> желательно сформировать на базе
 // данных из фильтров
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHttp } from "../../hooks/http.hook"
 import {heroCreated } from '../../actions';
@@ -24,7 +24,7 @@ const HeroesAddForm = () => {
 
   const { request } = useHttp();
   const dispatch = useDispatch();
-  const {filters, filtersLoadingStatus} = useSelector(state => state);
+  const {filters, filtersLoadingStatus} = useSelector(state => state.filters);
 
 
   const onSubmitHandler = (e) => {
