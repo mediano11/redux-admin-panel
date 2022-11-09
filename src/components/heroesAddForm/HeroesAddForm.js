@@ -11,7 +11,7 @@
 import { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHttp } from "../../hooks/http.hook"
-import { filtersFetching, filtersFetched, filtersFetchingError, heroCreated } from '../../actions';
+import {heroCreated } from '../../actions';
 // import { reducer } from "../../reducers"
 import { v4 as uuidv4 } from 'uuid';
 
@@ -26,14 +26,6 @@ const HeroesAddForm = () => {
   const dispatch = useDispatch();
   const {filters, filtersLoadingStatus} = useSelector(state => state);
 
-  useEffect(() => {
-      dispatch(filtersFetching());
-      request("http://localhost:3001/filters")
-          .then(data => dispatch(filtersFetched(data)))
-          .catch(() => dispatch(filtersFetchingError()))
-
-      // eslint-disable-next-line
-  }, []);
 
   const onSubmitHandler = (e) => {
     e.preventDefault();

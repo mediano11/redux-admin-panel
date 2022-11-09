@@ -6,14 +6,14 @@
 // Изменять json-файл для удобства МОЖНО!
 // Представьте, что вы попросили бэкенд-разработчика об этом
 
-import { filtersFetching, filtersFetched, filtersFetchingError } from '../../actions';
+import { filtersFetching, filtersFetched, filtersFetchingError, activeFilterChanged } from '../../actions';
 import { useSelector, useDispatch } from "react-redux";
 import {useHttp} from '../../hooks/http.hook';
 import { useEffect } from 'react';
 import Spinner from '../spinner/Spinner';
 
 const HeroesFilters = () => {
-  const {filters, filtersLoadingStatus} = useSelector(state => state);
+  const {filters, filtersLoadingStatus, activeFilter} = useSelector(state => state);
 
   const dispatch=  useDispatch();
   const {request} = useHttp(); 
@@ -42,7 +42,12 @@ const HeroesFilters = () => {
     
     return filters.map(({name, title, className}) => {
       // eslint-disable-next-line
-      return <button key={name} className={`btn ${className}`}>{title}</button>
+      return <button 
+            key={name} 
+            className={`btn ${className} ${name===activeFilter ? "active" : ""}`}
+            onClick={() => dispatch(activeFilterChanged(name))}
+            >
+            {title}</button>
     })
   }
 
