@@ -11,8 +11,7 @@
 import { useState } from "react";
 import { useSelector, useDispatch } from "react-redux";
 import { useHttp } from "../../hooks/http.hook"
-import {heroCreated } from '../../actions';
-// import { reducer } from "../../reducers"
+import {heroCreated } from '../heroesList/heroesSlice';
 import { v4 as uuidv4 } from 'uuid';
 
 
